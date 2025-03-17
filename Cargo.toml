@@ -1,0 +1,8 @@
+[package]
+name = "ugi"
+version = "0.1.0"
+edition = "2021"
+description = "Reference implementation of the UGI (Universal Game Interface) protocol"
+license = "MIT"
+
+[dependencies]
