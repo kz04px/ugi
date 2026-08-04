@@ -10,7 +10,7 @@ The key words "must", "must not", "required", "shall", "shall not", "should", "s
 
 ## Game compatability
 Games must be:
-- Two player
+- Two or more players
 - Have nonsimultaneous turns
 
 ---
@@ -26,7 +26,7 @@ Due to being game agnostic, UGI has no notion of what FEN or move strings should
 ---
 
 ## Match runners
-A match runner is not required to know the rules of the game being played. It may simply relay `position`/`moves` between the two engines, using the `query`/`response` commands to ask an engine whose turn it is, whether the game is over, and what the result was, rather than working any of that out itself.
+A match runner is not required to know the rules of the game being played. It may simply relay `position`/`moves` between the engines, using the `query`/`response` commands to ask an engine whose turn it is, whether the game is over, and what the result was, rather than working any of that out itself.
 
 ---
 
@@ -64,17 +64,17 @@ Popular games that fit UGI's compatibility requirements, split by whether a matc
 
 ### Match runner needs to know the rules
 - backgammon - the runner must generate dice rolls itself and embed them into the position, since UGI has no built-in notion of randomness
-- Scrabble (2 player) - the runner must draw tiles itself and embed each player's rack into the position, since UGI has no built-in notion of randomness or hidden information
-- poker (heads-up) - the runner must shuffle and deal cards itself and embed each player's hole cards into the position, since UGI has no built-in notion of randomness or hidden information
-- Uno (2 player) - the runner must shuffle and deal cards itself and embed each player's hand into the position, since UGI has no built-in notion of randomness or hidden information
-- Risk (2 player) - the runner must control the neutral third army and its dice rolls itself, since UGI has no notion of a non-participating player
+- Scrabble - the runner must draw tiles itself and embed each player's rack into the position, since UGI has no built-in notion of randomness or hidden information
+- poker - the runner must shuffle and deal cards itself and embed each player's hole cards into the position, since UGI has no built-in notion of randomness or hidden information
+- Uno - the runner must shuffle and deal cards itself and embed each player's hand into the position, since UGI has no built-in notion of randomness or hidden information
+- Risk - the runner must generate dice rolls itself and embed them into the position, since UGI has no built-in notion of randomness
+- Settlers of Catan - the runner must generate dice rolls itself and embed them into the position, since UGI has no built-in notion of randomness
 
 ---
 
 ## Incompatible games
 Popular games that don't fit UGI's compatibility requirements:
-- Settlers of Catan - more than two players, no official 2-player variant
-- Diplomacy - more than two players, simultaneous turns
+- Diplomacy - simultaneous turns
 - rock-paper-scissors - simultaneous turns
 
 ---

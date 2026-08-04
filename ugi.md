@@ -5,6 +5,7 @@
 - Option "OwnBook" MUST be false by default
 - Only three commands MAY be sent while an engine is searching: `isready`, `stop`, and `quit`
 - All messages MUST end with a newline.
+- Player numbers (as used in `go`, `query`, and `response`) MUST remain stable for the entire lifetime of a game. If a player is eliminated or otherwise drops out, their number MUST NOT be reassigned or reused — turns simply skip eliminated players rather than the remaining players being renumbered.
 
 ---
 
@@ -72,10 +73,10 @@ Examples:
 Start searching the current position. Only one of five different ways to search will be specified. All arguments MUST be included for the relevant search type. `go` will never be called on a position without legal moves. Upon finishing, search MUST print `bestmove <x>` where `x` is a string representation of the best move found.
 
 Time:
-- `p1time <x>` - The amount of time player 1 has left in milliseconds > 0.
-- `p2time <x>` - The amount of time player 2 has left in milliseconds > 0.
-- `p1inc <x>` - The amount of increment player 1 is given in milliseconds >= 0.
-- `p2inc <x>` - The amount of increment player 2 is given in milliseconds >= 0.
+- `time <t1> <t2> ...` - The amount of time each player has left, in milliseconds, listed in player order (`t1` is player 1's time, `t2` is player 2's, and so on) > 0.
+- `inc <i1> <i2> ...` - The amount of increment each player is given, in milliseconds, listed in the same order >= 0.
+
+The number of values given to `time` and to `inc` MUST both equal the number of players in the game. Since every `go` keyword is followed by one or more numeric values and no numeric value can itself be mistaken for a keyword, a parser can read `time`/`inc`'s values by consuming tokens up to (but not including) the next non-numeric token.
 
 Movetime:
 - `movetime <x>` - The amount of time to search for in milliseconds > 0.
@@ -93,8 +94,9 @@ Infinite:
 - `infinite` - Search until `stop` is received, or until naturally forced to stop by algorithmic or implementation limitations.
 
 Examples:
-- `go p1time 1000 p2time 1000 p1inc 10 p2inc 10`
-- `go p1time 60000 p2time 60000 movestogo 40`
+- `go time 1000 1000 inc 10 10`
+- `go time 60000 60000 movestogo 40`
+- `go time 1000 1000 1000 inc 10 10 10`
 - `go movetime 500`
 - `go depth 3`
 - `go nodes 5000`
@@ -157,7 +159,7 @@ Due to being game agnostic, UGI does not guarantee that a position has a finite 
 
 ## query <x>
 Due to being game agnostic, UGI relies on players to provide information about the game state. When a query is sent, the engine MUST reply with `response`.
-- `p1turn` - Is it currently player one's turn?
+- `turn` - Which player's turn is it currently?
 - `gameover` - Is the game over for the current position?
 - `result` - What's the result for the current position?
 
@@ -165,9 +167,9 @@ Due to being game agnostic, UGI relies on players to provide information about t
 
 ## response <x>
 When a `query` is received, the engine MUST reply with the relevant information.
-- `p1turn` - Return `true` or `false` depending on whether it's player one's turn.
+- `turn` - Return `<n>`, the number (starting at 1) of the player whose turn it is.
 - `gameover` - Return `true` or `false` depending on whether the current position is game over.
-- `result` - Return `p1win`, `p2win`, `draw`, or `none` depending on the current position's game over result.
+- `result` - Return `win <n>` (the number of the winning player), `draw`, or `none` depending on the current position's game over result.
 
 ---
 

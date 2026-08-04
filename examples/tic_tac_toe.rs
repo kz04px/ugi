@@ -3,6 +3,8 @@ use std::str::SplitAsciiWhitespace;
 use ugi::{gosettings::GoSettings, listen, UGIGameResult, UGI};
 
 const SIZE: usize = 3;
+
+/// Every row, column, and diagonal, as board indices.
 const LINES: [[usize; 3]; 8] = [
     [0, 1, 2],
     [3, 4, 5],
@@ -14,12 +16,15 @@ const LINES: [[usize; 3]; 8] = [
     [2, 4, 6],
 ];
 
+/// The contents of a single square.
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Piece {
     X,
     O,
 }
 
+/// Board state plus whose turn it is. `board` is stored row-major from the top-left, i.e. index
+/// 0 is square `a3` and index 8 is square `a1`.
 #[derive(Clone, Copy)]
 struct TicTacToe {
     board: [Option<Piece>; 9],
@@ -34,6 +39,8 @@ impl TicTacToe {
         }
     }
 
+    /// Resets to `fen`, which is either `startpos` or `<9 cells> <side to move>` (see the module
+    /// docs for the encoding). Unrecognised characters are treated as empty squares.
     fn set_position(&mut self, fen: &str) {
         *self = Self::new();
 
@@ -69,12 +76,15 @@ impl TicTacToe {
         Some((SIZE - 1 - row) * SIZE + col)
     }
 
+    /// Inverse of `square_index`.
     fn square_name(index: usize) -> String {
         let col = index % SIZE;
         let row = SIZE - 1 - index / SIZE;
         format!("{}{}", (b'a' + col as u8) as char, row + 1)
     }
 
+    /// Places the side to move's mark on `index` and flips whose turn it is. Does not check that
+    /// `index` is a legal (empty) square — callers are expected to check first.
     fn make(&mut self, index: usize) {
         self.board[index] = if self.x_to_move {
             Some(Piece::X)
@@ -84,6 +94,7 @@ impl TicTacToe {
         self.x_to_move = !self.x_to_move;
     }
 
+    /// Applies a move string, ignoring it if the square doesn't parse or isn't empty.
     fn apply(&mut self, movestr: &str) {
         if let Some(index) = Self::square_index(movestr) {
             if self.board[index] == None {
@@ -92,6 +103,7 @@ impl TicTacToe {
         }
     }
 
+    /// Indices of every empty square.
     fn legal_moves(&self) -> Vec<usize> {
         (0..9).filter(|&i| self.board[i].is_none()).collect()
     }
@@ -104,6 +116,7 @@ impl TicTacToe {
             .map(|(a, _, _)| a)?
     }
 
+    /// The game's outcome, or `None` if it isn't over yet.
     fn result(&self) -> Option<UGIGameResult> {
         match self.winner() {
             Some(Piece::X) => Some(UGIGameResult::P1Win),
@@ -113,6 +126,7 @@ impl TicTacToe {
         }
     }
 
+    /// Counts leaf positions reached after exactly `depth` more plies, per the `perft` command.
     fn perft(&mut self, depth: i32) -> u64 {
         if depth == 0 || self.result().is_some() {
             return 1;
@@ -130,6 +144,7 @@ impl TicTacToe {
             .sum()
     }
 
+    /// Prints the board as 3 rows of `x`/`o`/`.`.
     fn print_board(&self) {
         for row in 0..SIZE {
             let cells = (0..SIZE)
