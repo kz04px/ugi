@@ -162,6 +162,7 @@ Due to being game agnostic, UGI relies on players to provide information about t
 - `turn` - Which player's turn is it currently?
 - `gameover` - Is the game over for the current position?
 - `result` - What's the result for the current position?
+- `score` - What's each player's current score?
 
 ---
 
@@ -170,6 +171,7 @@ When a `query` is received, the engine MUST reply with the relevant information.
 - `turn` - Return `<n>`, the number (starting at 1) of the player whose turn it is.
 - `gameover` - Return `true` or `false` depending on whether the current position is game over.
 - `result` - Return `win <n>` (the number of the winning player), `draw`, or `none` depending on the current position's game over result.
+- `score` - Return `<s1> <s2> ...`, each player's current score in player order, for games that track a score (e.g. points, chips). For games with no notion of score, return `none` instead.
 
 ---
 
