@@ -163,8 +163,8 @@ pub fn parse(stream: &mut Peekable<SplitAsciiWhitespace>) -> Result<GoSettings, 
             "depth" => parse_arg(
                 stream,
                 "depth",
-                0,
-                "greater than or equal to 0",
+                1,
+                "greater than 0",
                 &mut settings.depth,
             )?,
             "nodes" => parse_arg(stream, "nodes", 1, "greater than 0", &mut settings.nodes)?,
@@ -230,9 +230,15 @@ mod tests {
     }
 
     #[test]
-    fn depth_zero_is_allowed() {
-        let settings = parse_str("depth 0").unwrap();
-        assert_eq!(settings.depth, Some(0));
+    fn depth_zero_is_out_of_range() {
+        assert_eq!(
+            parse_str("depth 0"),
+            Err(GoParseError::OutOfRange {
+                keyword: "depth",
+                value: "0".to_owned(),
+                constraint: "greater than 0",
+            })
+        );
     }
 
     #[test]
@@ -242,7 +248,7 @@ mod tests {
             Err(GoParseError::OutOfRange {
                 keyword: "depth",
                 value: "-1".to_owned(),
-                constraint: "greater than or equal to 0",
+                constraint: "greater than 0",
             })
         );
     }
@@ -373,10 +379,10 @@ mod tests {
             GoParseError::OutOfRange {
                 keyword: "depth",
                 value: "-1".to_owned(),
-                constraint: "greater than or equal to 0",
+                constraint: "greater than 0",
             }
             .to_string(),
-            "'depth' value '-1' must be greater than or equal to 0"
+            "'depth' value '-1' must be greater than 0"
         );
         assert_eq!(
             GoParseError::DuplicateKeyword { keyword: "depth" }.to_string(),
